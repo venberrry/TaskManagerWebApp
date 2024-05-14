@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Taska Manager";
+}
+
+@foreach (var task in Model)
+{
+    <div style="display: inline-block; background-color:lightpink; margin:15px;">
+        <h3>@task.Headline</h3>
+        <p>@task.Description</p>
+        <p>@task.Date</p>
+    </div>
+}

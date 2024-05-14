@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "Taska Manager";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Post" method="post">
+    <div class="form-group">
+        <label asp-for="Headline"></label>
+        <input type="text" id="Headline" name="Headline" required>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea id="Description" name="Description" required></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Date"></label>
+        <input asp-for="Date" class="form-control" type="Date" name="Date" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Создать задачу</button>
+</form>
+
+<div style="margin: 40px">--------------------------------------------------</div>
