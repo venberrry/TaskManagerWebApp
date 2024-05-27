@@ -4,9 +4,42 @@
 
 @foreach (var task in Model)
 {
-    <div style="display: inline-block; background-color:lightpink; margin:15px;">
-        <h3>@task.Headline</h3>
-        <p>@task.Description</p>
-        <p>@task.Date</p>
-    </div>
+    <a class="task" data-id="@task.Id" style="display: inline-block;">
+        <div style="display: inline-block; background-color:lightpink; margin:15px;">
+                <h3>@task.Headline</h3>
+                <p>@task.Description</p>
+                <p>@task.Date</p>
+        </div>
+     </a>
 }
+
+<script>
+    const taskDivs = document.querySelectorAll('.task');
+
+    taskDivs.forEach(div => {
+        div.addEventListener('click', function() {
+            // Получаем id таски из атрибута data-id
+            const taskId = a.dataset.id;
+
+            // Отправляем запрос на сервер для обработки щелчка на таске
+            fetch(`api/Task/Details/${taskId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                // Обрабатываем ответ от сервера
+                if (response.ok) {
+                    // Перенаправляем на страницу деталей таски
+                    window.location.href = `api/Task/Details/${taskId}`;
+                } else {
+                    console.error('Ошибка при выполнении запроса');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+            });
+        });
+    });
+</script>

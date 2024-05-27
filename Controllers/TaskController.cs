@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebAppSummerSchool.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class TaskController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -25,14 +26,14 @@ namespace WebAppSummerSchool.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult Details(int id)
         {
             var task = _dbContext.TaskObject.Find(id);
             if (task == null)
             {
                 return NotFound();
             }
-            return Ok(task);
+            return View("~/Views/Task/Details.cshtml", task);
         }
 
         [HttpGet("Form")]
