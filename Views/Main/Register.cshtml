@@ -5,28 +5,28 @@
 <h1>Регистрация</h1>
 <h1>Выберите свою роль и введите логин и пароль</h1>
 
-<!-- Форма для выбора роли Админ/Пользователь -->
 <form asp-action="Register" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
-
-    <label asp-for="role">Choose a role:</label>
-    <select asp-for="role" id=" role" name="role">
-        <option value="Admin">Admin</option>
-        <option value="User">User</option>
-    </select>
-    <br />
+        <label asp-for="Role">Choose a role:</label>
+        <select asp-for="Role" id="Role" name="Role" class="form-control">
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+        <br />
     </div>
-        <div class="form-group">
-
-    <label asp-for="username">Username:</label>
-    <input asp-for="username" type="text" id="username" name="username">
-    <br />
+    <div class="form-group">
+        <label asp-for="Username">Username:</label>
+        <input asp-for="Username" type="text" id="Username" name="Username" class="form-control">
+        <span asp-validation-for="Username" class="text-danger"></span>
+        <br />
     </div>
-            <div class="form-group">
-
-    <label asp-for="password">Password:</label>
-    <input asp-for="password" type="password" id="password" name="password">
-    <br />
-    <button type="submit">Зарегистрироваться</button>
+    <div class="form-group">
+        <label asp-for="Password">Password:</label>
+        <input asp-for="Password" type="password" id="Password" name="Password" class="form-control">
+        <span asp-validation-for="Password" class="text-danger"></span>
+        <br />
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
     </div>
 </form>

@@ -1,0 +1,43 @@
+﻿@model IEnumerable<WebAppSummerSchool.TaskObject>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Профиль";
+}
+
+<h1>Профиль</h1>
+
+<form asp-action="ChangeEmail" method="post">
+    <div class="form-group">
+        <label asp-for="Email" name="Email">Email:</label>
+        <input asp-for="Email" type="email" name="Email" placeholder="New Email" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Change Email</button>
+</form>
+
+<form asp-action="UploadFile" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" required />
+    <button type="submit">Upload File</button>
+</form>
+
+<!-- Кнопка для перехода к созданию задачи -->
+<a href="javascript:void(0);" onclick="document.getElementById('createTaskForm').submit();" class="btn btn-primary">Создать таску</a>
+<form id="createTaskForm" action="/Profile/CreateTask" method="get" style="display: none;">
+    <button type="submit" class="btn btn-danger">Выход</button>
+</form>
+<br />
+<!-- Кнопка для выхода из системы -->
+<a href="javascript:void(0);" onclick="document.getElementById('logoutForm').submit();" class="btn btn-primary">Выйти</a>
+<form id="logoutForm" action="/Profile/Logout" method="post" style="display: none;">
+    <button type="submit" class="btn btn-danger">Выход</button>
+</form>
+
+<h2>Ваши задачи</h2>
+@foreach (var task in Model)
+{
+    <div style="background-color:lightpink; margin:15px;">
+        <h3>@task.Headline</h3>
+        <p>@task.Description</p>
+        <p>@task.Date</p>
+    </div>
+}

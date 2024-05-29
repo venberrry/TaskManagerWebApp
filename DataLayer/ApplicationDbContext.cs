@@ -5,9 +5,10 @@ public class ApplicationDbContext : DbContext
 {
     public DbSet<TaskObject> TaskObject { get; set; }
     public DbSet<UserObject> UserObject { get; set; }
-    public ApplicationDbContext()
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        Database.EnsureCreated();
+        //Database.EnsureCreated();
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -16,9 +17,4 @@ public class ApplicationDbContext : DbContext
             .WithOne(tas => tas.UserObject)
             .HasForeignKey(t => t.UserId);
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=SumrSchBarsTaskManager;Username=postgres;Password=12345asd;");
-    }
-
 }

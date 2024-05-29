@@ -11,11 +11,12 @@ namespace WebAppSummerSchool.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public TaskController()
+        public TaskController(ApplicationDbContext dbContext)
         {
-            ApplicationDbContext applicationDbContext = new ApplicationDbContext();
+            //ApplicationDbContext applicationDbContext = new ApplicationDbContext();
 
-            _dbContext = applicationDbContext;
+            //_dbContext = applicationDbContext;
+            _dbContext = dbContext;
         }
 
         [HttpGet("List")]

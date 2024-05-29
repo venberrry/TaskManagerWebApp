@@ -1,0 +1,26 @@
+﻿@model WebAppSummerSchool.TaskObject
+
+@{
+    ViewData["Title"] = "Создйте таску";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CreateTask" method="post">
+    <div class="form-group">
+        <label asp-for="Headline"></label>
+        <input asp-for="Headline" class="form-control" name="Headline" required />
+        <span asp-validation-for="Headline" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control" name="Description" required></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Date"></label>
+        <input asp-for="Date" class="form-control" type="date" name="Date" required />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Создать задачу</button>
+</form>

@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebAppSummerSchool.DTO;
+using Microsoft.EntityFrameworkCore;
 using WebAppSummerSchool.Models;
+using WebAppSummerSchool.DTO;
 
 namespace WebAppSummerSchool.Controllers
 {
@@ -11,15 +14,13 @@ namespace WebAppSummerSchool.Controllers
     public class MainController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
-        private readonly IConfiguration _configuration;
+        private readonly ILogger<ProfileController> _logger;
 
-        public MainController(IConfiguration configuration)
+
+        public MainController(ApplicationDbContext dbContext, ILogger<ProfileController> logger)
         {
-            _configuration = configuration;
-            ApplicationDbContext applicationDbContext = new ApplicationDbContext();
-            _dbContext = applicationDbContext;
-            _jwtTokenGenerator = new JwtTokenGenerator(configuration);
+            _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -31,29 +32,62 @@ namespace WebAppSummerSchool.Controllers
         [HttpGet("Login")]
         public IActionResult Login()
         {
-            return View("~/Views/Main/Login.cshtml", new LoginViewModel());
+            return View("~/Views/Main/Login.cshtml");
         }
 
         [HttpPost("Login")]
-        public IActionResult LoginPost([FromForm] LoginViewModel model)
+        public async Task<IActionResult> LoginPost([FromForm] LoginDTO model)
         {
+            _logger.LogInformation("Received Username: {Username}, Password: {Password}", model.Username, model.Password);
+
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Model state is invalid");
                 return View("Login", model);
             }
 
-            var user = _dbContext.UserObject.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
-            if (user == null)
+            try
             {
-                ModelState.AddModelError("", "Неверное имя пользователя или пароль.");
+                var user = await _dbContext.UserObject.FirstOrDefaultAsync(u => u.Username == model.Username && u.Password == model.Password);
+
+                if (user == null)
+                {
+                    _logger.LogWarning("User not found in database.");
+                    ModelState.AddModelError("", "Неверное имя пользователя или пароль.");
+                    return View("Login", model);
+                }
+
+                _logger.LogInformation("User found: {Username}", user.Username);
+
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // Добавляем идентификатор пользователя
+        };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true
+                };
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                _logger.LogInformation("User {Username} signed in successfully.", user.Username);
+
+                return RedirectToAction("Index", "Profile");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while logging in.");
+                ModelState.AddModelError("", "Произошла ошибка при попытке входа.");
                 return View("Login", model);
             }
-
-            var token = _jwtTokenGenerator.GenerateToken(user.Username, user.Role);
-
-            return RedirectToAction("Index", "Profile");
         }
-    
+
+
+
 
         [HttpGet("Register")]
         public IActionResult Register()
@@ -62,10 +96,17 @@ namespace WebAppSummerSchool.Controllers
         }
 
         [HttpPost("Register")]
-        public IActionResult RegisterPost([FromForm] RegisterViewModel model)
+        public async Task<IActionResult> RegisterPost([FromForm] RegisterDTO model)
         {
             if (!ModelState.IsValid)
             {
+                return View("Register", model);
+            }
+
+            var existingUser = await _dbContext.UserObject.FirstOrDefaultAsync(u => u.Username == model.Username);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Username", "Пользователь с таким именем уже существует");
                 return View("Register", model);
             }
 
@@ -77,11 +118,23 @@ namespace WebAppSummerSchool.Controllers
             };
 
             _dbContext.UserObject.Add(user);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true
+            };
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
             return RedirectToAction("Index", "Profile");
         }
-
-
     }
 }

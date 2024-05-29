@@ -10,7 +10,7 @@ namespace WebAppSummerSchool
         public DateTime Date { get; set; }
         public int UserId { get; set; }
 
-        public UserObject UserObject { get; set; }
+        public UserObject? UserObject { get; set; }
 
     }
 }
