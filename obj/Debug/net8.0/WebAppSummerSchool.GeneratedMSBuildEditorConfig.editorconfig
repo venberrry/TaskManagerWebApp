@@ -18,6 +18,26 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\user\source\repos\WebAppSummerSchool\WebAppSummerSchool
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/user/source/repos/WebAppSummerSchool/WebAppSummerSchool/Views/Main/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/user/source/repos/WebAppSummerSchool/WebAppSummerSchool/Views/Main/Main.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxNYWluLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/user/source/repos/WebAppSummerSchool/WebAppSummerSchool/Views/Main/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/user/source/repos/WebAppSummerSchool/WebAppSummerSchool/Views/Profile/CreateTask.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxDcmVhdGVUYXNrLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/user/source/repos/WebAppSummerSchool/WebAppSummerSchool/Views/Profile/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/user/source/repos/WebAppSummerSchool/WebAppSummerSchool/Views/Task/Form.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza1xGb3JtLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

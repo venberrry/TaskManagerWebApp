@@ -1,24 +1,51 @@
 ﻿@model IEnumerable<WebAppSummerSchool.TaskObject>
-@using System.Security.Claims
+@using System.Security.Claims;
 
 @{
     ViewData["Title"] = "Профиль";
 }
 
 <h1>Профиль</h1>
+<!-- Отображение ошибок -->
+@if (ViewBag.Error != null)
+{
+<div class="alert alert-danger">
+    @ViewBag.Error
+</div>
+}
 
-<form asp-action="ChangeEmail" method="post">
+<!-- Отображение других месседжей -->
+@if (ViewBag.Message != null)
+{
+<div class="alert alert-success">
+    @ViewBag.Message
+</div>
+}
+
+<br>
+<p>Текущий e-mail: <strong>@ViewBag.CurrentEmail</strong></p>
+<form asp-action="ChangeEmail" action="/Profile/ChangeEmail" method="post">
     <div class="form-group">
-        <label asp-for="Email" name="Email">Email:</label>
-        <input asp-for="Email" type="email" name="Email" placeholder="New Email" class="form-control" required />
+        <label asp-for="Email">Email:</label>
+        <input asp-for="Email" type="email" name="Email" placeholder="New Email" class="text-danger" required />
     </div>
     <button type="submit" class="btn btn-primary">Change Email</button>
 </form>
 
-<form asp-action="UploadFile" method="post" enctype="multipart/form-data">
+<br>
+
+@if (ViewBag.ImagePath != null)
+{
+<img src="@Url.Content(ViewBag.ImagePath)" alt="Profile Image" style="height: 100px; width: 100px;" />
+}
+
+<br>
+
+<form asp-action="UploadFile" action="/Profile/UploadFile" method="post" enctype="multipart/form-data">
     <input type="file" name="file" required />
     <button type="submit">Upload File</button>
 </form>
+
 
 <!-- Кнопка для перехода к созданию задачи -->
 <a href="javascript:void(0);" onclick="document.getElementById('createTaskForm').submit();" class="btn btn-primary">Создать таску</a>

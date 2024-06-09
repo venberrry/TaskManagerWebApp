@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "dfggAGB/aZ0Wtav1Qu9wltGMu9STxs2OEWitOrS8RmY=",
+  "Hash": "kExR7HPiMSQxkrvPVpBfbzLbBx9wxVIPQjXBKSKF4bc=",
   "Source": "WebAppSummerSchool",
   "BasePath": "_content/WebAppSummerSchool",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "WebAppSummerSchool\\wwwroot",
+      "Source": "WebAppSummerSchool",
+      "ContentRoot": "C:\\Users\\user\\source\\repos\\WebAppSummerSchool\\WebAppSummerSchool\\wwwroot\\",
+      "BasePath": "_content/WebAppSummerSchool",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

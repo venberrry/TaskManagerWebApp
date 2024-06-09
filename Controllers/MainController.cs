@@ -5,7 +5,6 @@ using System.Security.Claims;
 using WebAppSummerSchool.DTO;
 using Microsoft.EntityFrameworkCore;
 using WebAppSummerSchool.Models;
-using WebAppSummerSchool.DTO;
 
 namespace WebAppSummerSchool.Controllers
 {
@@ -86,16 +85,14 @@ namespace WebAppSummerSchool.Controllers
             }
         }
 
-
-
-
         [HttpGet("Register")]
         public IActionResult Register()
         {
             return View("~/Views/Main/Register.cshtml");
         }
 
-        [HttpPost("Register")]
+
+            [HttpPost("Register")]
         public async Task<IActionResult> RegisterPost([FromForm] RegisterDTO model)
         {
             if (!ModelState.IsValid)
@@ -114,16 +111,19 @@ namespace WebAppSummerSchool.Controllers
             {
                 Role = model.Role,
                 Username = model.Username,
-                Password = model.Password
+                Password = model.Password,
+                Email = "none"  // Устанавливаем email в 'none' при регистрации
             };
 
             _dbContext.UserObject.Add(user);
             await _dbContext.SaveChangesAsync();
 
+            // Аутентификация пользователя после успешной регистрации
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

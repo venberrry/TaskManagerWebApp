@@ -8,6 +8,7 @@ using WebAppSummerSchool.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebAppSummerSchool.DTO;
+using System;
 
 namespace WebAppSummerSchool.Controllers
 {
@@ -18,14 +19,20 @@ namespace WebAppSummerSchool.Controllers
         private readonly ILogger<ProfileController> _logger;
         private readonly ITaskService _taskService;
         private readonly ApplicationDbContext _dbContext;
-        private readonly EmailService _emailService;
-        private readonly FileService _fileService;
+        private readonly IFileService _fileService;
+        private readonly IWebHostEnvironment _env;
 
-        public ProfileController(ILogger<ProfileController> logger, ITaskService taskService, ApplicationDbContext dbContext)
+        public ProfileController(ILogger<ProfileController> logger,
+            ITaskService taskService,
+            IFileService fileService,
+            ApplicationDbContext dbContext,
+            IWebHostEnvironment env)
         {
             _logger = logger;
             _taskService = taskService;
             _dbContext = dbContext;
+            _fileService = fileService;
+            _env = env;
         }
 
         [HttpGet("Index")]
@@ -33,16 +40,36 @@ namespace WebAppSummerSchool.Controllers
         {
             _logger.LogInformation("Profile index page accessed.");
 
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userRole = User.FindFirst(ClaimTypes.Role).Value;
+            if (!User.Identity.IsAuthenticated)
+            {
+                _logger.LogWarning("Access attempt to Profile Index by unauthenticated user.");
+                return RedirectToAction("Index", "Main");
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                _logger.LogError("User ID claim is missing for authenticated user.");
+                return RedirectToAction("Index", "Main");
+            }
+            var userId = int.Parse(userIdClaim.Value);
+
+            var user = _dbContext.UserObject.Find(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
 
             var tasks = _dbContext.TaskObject
-                .Where(t => t.UserObject.Role == userRole)
+                .Where(t => t.UserObject.Role == user.Role)
                 .ToList();
 
+            ViewBag.CurrentEmail = user.Email; // Добавляем email пользователя в ViewBag для передачи в представление
+            ViewBag.ImagePath = user.ImagePath;
+            
             return View("~/Views/Profile/Profile.cshtml", tasks);
         }
-
+        
         [HttpGet("CreateTask")]
         public IActionResult CreateTask()
         {
@@ -97,7 +124,7 @@ namespace WebAppSummerSchool.Controllers
             _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Main");
         }
-
+        
         [HttpPost("ChangeEmail")]
         public async Task<IActionResult> ChangeEmail([FromForm] EmailDTO model)
         {
@@ -105,29 +132,48 @@ namespace WebAppSummerSchool.Controllers
             var user = await _dbContext.UserObject.FindAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return Content("Чет не то");
             }
-
+            
             user.Email = model.Email;
-            _dbContext.Update(user);
+            _dbContext.Entry(user).Property(u => u.Email).IsModified = true;
             await _dbContext.SaveChangesAsync();
 
             return RedirectToAction("Index");
         }
 
+
+        //Просто есть
         [HttpPost("UploadFile")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
+        public async Task<IActionResult> UploadStop(IFormFile file)
         {
-            var filePath = await _fileService.UploadFileAsync(file);
-            if (filePath != null)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
             {
-                ViewBag.Message = "Загрузили файл";
+                ViewBag.Error = "Не авторизован";
+                return View("Index");
+            }
+
+            var user = await _dbContext.UserObject.FindAsync(int.Parse(userId));
+            if (user == null)
+            {
+                ViewBag.Error = "Пользователь не найден";
+                return View("Index");
+            }
+
+            var filePath = await _fileService.UploadFileAsync(file, _env);
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                user.ImagePath = filePath; // Обновление пути изображения в профиле пользователя
+                _dbContext.SaveChanges();
+                ViewBag.Message = "Файл успешно загружен";
             }
             else
             {
-                ViewBag.Message = "Не загружен файл";
+                ViewBag.Error = "Ошибка загрузки файла";
             }
-            return View();
+
+            return RedirectToAction("Index");
         }
     }
 }
